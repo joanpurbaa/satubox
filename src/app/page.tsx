@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { site, getSiteUrl } from "@/lib/site";
+import { site } from "@/lib/site";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import AppMarquee from "@/components/AppMarquee";
@@ -13,53 +13,67 @@ import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 
-export async function generateMetadata(): Promise<Metadata> {
-	const url = await getSiteUrl();
-	const ogImage = `${url}${site.ogImage}`;
-	return {
-		alternates: { canonical: `${url}/` },
-		openGraph: {
-			title: `${site.name}: 30 Aplikasi Premium, Sekali Bayar Mulai Rp39.000`,
-			description: site.description,
-			type: "website",
-			locale: "id_ID",
-			siteName: site.name,
-			url: `${url}/`,
-			images: [
-				{
-					url: ogImage,
-					width: 1672,
-					height: 941,
-					alt: "SatuBox: 30 aplikasi premium untuk pelajar & mahasiswa, mulai Rp39.000/bulan",
-				},
-			],
-		},
-		twitter: {
-			card: "summary_large_image",
-			title: `${site.name}: 30 Aplikasi Premium, Sekali Bayar Mulai Rp39.000`,
-			description: site.description,
-			images: [ogImage],
-		},
-	};
-}
+const TITLE = `${site.name} — Paket Aplikasi Premium Mulai Rp39.000/bulan`;
+
+export const metadata: Metadata = {
+	alternates: { canonical: `${site.url}/` },
+	openGraph: {
+		title: TITLE,
+		description: site.description,
+		type: "website",
+		locale: "id_ID",
+		siteName: site.name,
+		url: `${site.url}/`,
+		images: [
+			{
+				url: `${site.url}${site.ogImage}`,
+				width: 1672,
+				height: 941,
+				alt: `${site.name} — paket aplikasi premium untuk pelajar & mahasiswa`,
+			},
+		],
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: TITLE,
+		description: site.description,
+		images: [`${site.url}${site.ogImage}`],
+	},
+};
+
+const webPageJsonLd = {
+	"@context": "https://schema.org",
+	"@type": "WebPage",
+	"@id": `${site.url}/#webpage`,
+	url: `${site.url}/`,
+	name: TITLE,
+	description: site.description,
+	inLanguage: "id-ID",
+	isPartOf: { "@id": `${site.url}/#website` },
+	about: { "@id": `${site.url}/#organization` },
+};
 
 export default function Home() {
-  return (
-    <>
-      <Navbar />
-      <ScrollReveal />
-      <main>
-        <Hero />
-        <AppMarquee />
-        <ValueProp />
-        <AppCategories />
-        <HowItWorks />
-        <Testimonials />
-        <Pricing />
-        <FAQ />
-        <FinalCTA />
-      </main>
-      <Footer />
-    </>
-  );
+	return (
+		<>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
+			/>
+			<Navbar />
+			<ScrollReveal />
+			<main>
+				<Hero />
+				<AppMarquee />
+				<ValueProp />
+				<AppCategories />
+				<HowItWorks />
+				<Testimonials />
+				<Pricing />
+				<FAQ />
+				<FinalCTA />
+			</main>
+			<Footer />
+		</>
+	);
 }
