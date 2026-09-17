@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Extension & tooling yang bukan bagian kode app:
+    "cookie-export-ext/**",
+    "prisma/**",
   ]),
 ]);
 
