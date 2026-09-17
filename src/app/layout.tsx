@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Image from "next/image";
-import { site } from "@/lib/site";
+import { site, getSiteUrl } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -39,42 +39,20 @@ export const metadata: Metadata = {
 	alternates: {
 		canonical: "/",
 	},
-	openGraph: {
-		title: `${site.name}: 30 Aplikasi Premium, Sekali Bayar Mulai Rp39.000`,
-		description: site.description,
-		type: "website",
-		locale: "id_ID",
-		siteName: site.name,
-		url: "/",
-		images: [
-			{
-				url: site.ogImage,
-				width: 1672,
-				height: 941,
-				alt: "SatuBox: 30 aplikasi premium untuk pelajar & mahasiswa, mulai Rp39.000/bulan",
-			},
-		],
-	},
-	twitter: {
-		card: "summary_large_image",
-		title: `${site.name}: 30 Aplikasi Premium, Sekali Bayar Mulai Rp39.000`,
-		description: site.description,
-		images: [site.ogImage],
-	},
 	category: "education",
 };
 
-const organizationJsonLd = {
+const organizationJsonLd = (url: string) => ({
 	"@context": "https://schema.org",
 	"@type": "Organization",
 	name: site.name,
-	url: site.url,
-	logo: `${site.url}${site.logo}`,
+	url,
+	logo: `${url}${site.logo}`,
 	description: site.description,
 	slogan: "30 aplikasi premium mahasiswa dalam satu paket",
 	areaServed: "ID",
 	sameAs: ["https://www.instagram.com/satuboxx"],
-};
+});
 
 const faqJsonLd = {
 	"@context": "https://schema.org",
@@ -128,12 +106,12 @@ const faqJsonLd = {
 	],
 };
 
-const productJsonLd = {
+const productJsonLd = (url: string) => ({
 	"@context": "https://schema.org",
 	"@type": "Product",
 	name: `${site.name} · Paket Aplikasi Premium`,
 	description: site.description,
-	image: `${site.url}${site.logo}`,
+	image: `${url}${site.logo}`,
 	brand: { "@type": "Brand", name: site.name },
 	offers: {
 		"@type": "AggregateOffer",
@@ -143,15 +121,16 @@ const productJsonLd = {
 		offerCount: "3",
 		availability: "https://schema.org/InStock",
 	},
-};
+});
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+	const originUrl = await getSiteUrl();
 	return (
 		<html lang="id" className={`${inter.variable} antialiased`}>
 			<head>
 				<script
 					type="application/ld+json"
-					dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd(originUrl)) }}
 				/>
 				<script
 					type="application/ld+json"
@@ -159,7 +138,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 				/>
 				<script
 					type="application/ld+json"
-					dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd(originUrl)) }}
 				/>
 			</head>
 			<body className="min-h-screen">
