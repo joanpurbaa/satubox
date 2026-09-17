@@ -1,26 +1,264 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-brand-50: #f5f2ff;
+  --color-brand-100: #ebe4ff;
+  --color-brand-200: #ddd3ff;
+  --color-brand-300: #cbbdff;
+  --color-brand-400: #916fff;
+  --color-brand-500: #7c5cff;
+  --color-brand-600: #6a45f0;
+  --color-brand-700: #5b2bef;
+  --color-brand-800: #4722c9;
+  --color-brand-900: #381ca4;
+
+  --color-surface: #11101c;
+  --color-surface-alt: #0b0a16;
+  --color-surface-dim: #1e1b30;
+  --color-border: #2b2740;
+  --color-border-light: #221e37;
+  --color-text-primary: #f5f3ff;
+  --color-text-secondary: #a9a4b8;
+  --color-text-muted: #777187;
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #090812;
+  color: var(--color-text-primary);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  overflow-x: clip;
+}
+
+/* Background grid + soft ambient lighting (section backdrops)
+   Single system shared by all sections that use it. */
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+/* Line layers first (drawn on top), radial glows behind them */
+  background-image: repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent calc(var(--grid-col, 220.8px) - 1px),
+      rgb(204 214 244 / 0.12) calc(var(--grid-col, 220.8px) - 1px),
+      rgb(204 214 244 / 0.12) var(--grid-col, 220.8px)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(var(--grid-row, var(--grid-col)) - 1px),
+      rgb(204 214 244 / 0.12) calc(var(--grid-row, var(--grid-col)) - 1px),
+      rgb(204 214 244 / 0.12) var(--grid-row, var(--grid-col))
+    ),
+    radial-gradient(ellipse 60% 45% at 50% 0%, rgb(124 92 255 / 0.15), transparent 62%),
+    radial-gradient(ellipse 45% 40% at 85% 60%, rgb(145 111 255 / 0.12), transparent 65%),
+    radial-gradient(ellipse 40% 40% at 12% 92%, rgb(228 90 239 / 0.08), transparent 65%);
+  background-position: 0 0, 0 0, 50% 0, 85% 60%, 12% 92%;
+  /* Soft fade at the very top/bottom so the grid blends with neighboring sections */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 48px,
+    #000 calc(100% - 48px),
+    transparent 100%
+  );
+}
+
+/* Align vertical column lines with the centered max-w-6xl card layout on large screens */
+@media (min-width: 1152px) {
+  .bg-grid-lg-align {
+    background-position: calc((100vw - 1152px) / 2) 0,
+      calc((100vw - 1152px) / 2) 0,
+      50% 0,
+      85% 60%,
+      12% 92%;
+  }
+}
+
+/* Scroll reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s var(--ease-smooth), transform 0.7s var(--ease-smooth);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children */
+.reveal-stagger.visible > * {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s var(--ease-smooth), transform 0.5s var(--ease-smooth);
+}
+
+.reveal-stagger.visible > *:nth-child(1) { transition-delay: 0ms; }
+.reveal-stagger.visible > *:nth-child(2) { transition-delay: 80ms; }
+.reveal-stagger.visible > *:nth-child(3) { transition-delay: 160ms; }
+.reveal-stagger.visible > *:nth-child(4) { transition-delay: 240ms; }
+.reveal-stagger.visible > *:nth-child(5) { transition-delay: 320ms; }
+.reveal-stagger.visible > *:nth-child(6) { transition-delay: 400ms; }
+
+.reveal-stagger.visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Floating vertical animation */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+.float-animate {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Marquee strip */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee 32s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.marquee-mask {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+}
+
+/* Animated gradient shimmer (headline / text) */
+@keyframes shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  60% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 7s ease-in-out infinite;
+}
+
+/* Soft breathing glow (opacity only, no transform to avoid conflicts) */
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 6s ease-in-out infinite;
+}
+
+/* Beating dot (badges, bullets) */
+@keyframes dot-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-dot {
+  transform-origin: center;
+  animation: dot-pulse 2.4s ease-in-out infinite;
+}
+
+/* Periodic sheen sweep across primary buttons */
+@keyframes sheen {
+  0% {
+    transform: translateX(-160%) skewX(-20deg);
+  }
+  55%,
+  100% {
+    transform: translateX(260%) skewX(-20deg);
+  }
+}
+
+.sheen {
+  position: relative;
+  overflow: hidden;
+}
+
+.sheen::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 40%;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent,
+    rgba(255, 255, 255, 0.32),
+    transparent
+  );
+  transform: translateX(-160%) skewX(-20deg);
+  animation: sheen 4.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .float-animate,
+  .marquee-track,
+  .reveal,
+  .reveal-stagger.visible > *,
+  .animate-shimmer,
+  .animate-pulse-soft,
+  .animate-dot,
+  .sheen::before {
+    animation: none;
+    transition: none;
+  }
 }

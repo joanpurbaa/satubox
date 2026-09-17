@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Order {
+  id                String   @id @default(cuid())
+  orderRef          String   @unique
+  name              String
+  email             String
+  mobile            String?
+  months            Int
+  amount            Int
+  status            String   @default("pending") // pending | paid | active | expired
+  mayarPaymentId    String?  @unique
+  mayarTransactionId String?
+  expiresAt         DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
