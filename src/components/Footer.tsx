@@ -15,7 +15,7 @@ export default function Footer() {
 					<div className="text-center md:text-left">
 						<div className="flex items-center justify-center gap-2 md:justify-start">
 							<Image
-								src="/icon.webp"
+								src="/icon.png"
 								alt="Logo SatuBox"
 								width={24}
 								height={24}

@@ -45,7 +45,7 @@ export default function Navbar() {
 					className="flex items-center gap-2"
 					aria-label="SatuBox Beranda">
 					<Image
-						src="/icon.webp"
+						src="/icon.png"
 						alt="Logo SatuBox"
 						width={28}
 						height={28}

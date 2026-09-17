@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 	],
 	applicationName: site.name,
 	icons: {
-		icon: "/icon.webp",
+		icon: "/icon.png",
 	},
 	robots: {
 		index: true,
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
 		url: "/",
 		images: [
 			{
-				url: "/icon.webp",
+				url: "/og.webp",
 				width: 1254,
 				height: 1254,
 				alt: "Logo SatuBox · Paket aplikasi premium mahasiswa",
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
 		card: "summary_large_image",
 		title: `${site.name}: 30 Aplikasi Premium, Sekali Bayar Mulai Rp39.000`,
 		description: site.description,
-		images: ["/icon.webp"],
+		images: ["/icon.png"],
 	},
 	category: "education",
 };
