@@ -48,7 +48,7 @@ export const metadata: Metadata = {
 		url: "/",
 		images: [
 			{
-				url: "/og.webp",
+				url: site.ogImage,
 				width: 1672,
 				height: 941,
 				alt: "SatuBox: 30 aplikasi premium untuk pelajar & mahasiswa, mulai Rp39.000/bulan",
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
 		card: "summary_large_image",
 		title: `${site.name}: 30 Aplikasi Premium, Sekali Bayar Mulai Rp39.000`,
 		description: site.description,
-		images: ["/og.webp"],
+		images: [site.ogImage],
 	},
 	category: "education",
 };
