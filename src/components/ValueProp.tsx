@@ -4,8 +4,8 @@ const values = [
 	{
 		number: "01",
 		img: "/allinone.webp",
-		imgW: 1254,
-		imgH: 1254,
+		imgW: 1122,
+		imgH: 1402,
 		imgAlt: "Ilustrasi satu paket SatuBox",
 		icon: (
 			<svg
@@ -30,8 +30,8 @@ const values = [
 	{
 		number: "02",
 		img: "/box.webp",
-		imgW: 1122,
-		imgH: 1402,
+		imgW: 1254,
+		imgH: 1254,
 		imgAlt: "Ilustrasi akses semua aplikasi dalam satu tempat",
 		icon: (
 			<svg
