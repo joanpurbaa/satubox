@@ -21,7 +21,11 @@ export const metadata: Metadata = {
 	description: site.description,
 	applicationName: site.name,
 	icons: {
-		icon: "/icon.png",
+		icon: {
+			url: `${site.url}/icon.png`,
+			sizes: "512x512",
+			type: "image/png",
+		},
 	},
 	robots: {
 		index: true,
