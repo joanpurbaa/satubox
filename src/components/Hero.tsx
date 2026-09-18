@@ -239,7 +239,7 @@ export default function Hero() {
 
 							{/* Device image */}
 							<Image
-								src="/box.png"
+								src="/box.webp"
 								alt="Satu box berisi berbagai aplikasi premium"
 								width={1254}
 								height={1254}
