@@ -31,6 +31,7 @@ export async function POST(req: Request) {
       email: p.email ?? auth.email,
       planId: p.planId ?? "",
       planLabel: p.planLabel ?? "",
+      subscriptionStatus: p.subscriptionStatus ?? "ACTIVE",
       expiresAtMs: p.expiresAtMs ?? 0,
     },
   });

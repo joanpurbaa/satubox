@@ -13,17 +13,22 @@ export default function RenewPlans() {
     setLoadingId(planId);
     setError("");
     try {
-      const res = await fetch("/api/auth/renew", {
+      const res = await fetch("/api/payments/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ planId }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Gagal memperbarui");
+        setError(data.error || "Gagal membuat pembayaran");
         return;
       }
-      router.refresh();
+      const refId = data.payment?.refId;
+      if (refId) {
+        router.push(`/payment?ref=${encodeURIComponent(refId)}`);
+      } else {
+        setError("Gagal membuat pembayaran. Coba lagi.");
+      }
     } catch {
       setError("Terjadi kesalahan. Coba lagi.");
     } finally {

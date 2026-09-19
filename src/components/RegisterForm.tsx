@@ -31,7 +31,12 @@ export default function RegisterForm({ initialPlan }: { initialPlan?: string }) 
         setError(data.error || "Gagal mendaftar");
         return;
       }
-      router.push("/login?registered=1");
+      const refId = data.payment?.refId;
+      if (refId) {
+        router.push(`/payment?ref=${encodeURIComponent(refId)}`);
+      } else {
+        setError("Akun dibuat, tetapi pembayaran belum siap. Silakan masuk untuk melanjutkan.");
+      }
     } catch {
       setError("Terjadi kesalahan. Coba lagi.");
     } finally {
@@ -43,7 +48,7 @@ export default function RegisterForm({ initialPlan }: { initialPlan?: string }) 
     <div className="mx-auto w-full max-w-lg rounded-3xl border border-border bg-surface/80 p-8 shadow-xl shadow-black/30 backdrop-blur-md">
       <h1 className="text-2xl font-bold text-text-primary">Daftar Akun</h1>
       <p className="mt-1 text-sm text-text-secondary">
-        Pilih durasi, isi data, dan akun langsung aktif untuk dicoba.
+        Pilih paket, isi data, lalu lanjut ke pembayaran untuk mengaktifkan langganan.
       </p>
 
       {error && (
@@ -137,7 +142,7 @@ export default function RegisterForm({ initialPlan }: { initialPlan?: string }) 
           type="submit"
           disabled={loading}
           className="h-12 w-full rounded-xl bg-brand-500 text-sm font-semibold text-white transition-all hover:bg-brand-400 active:scale-[0.98] disabled:opacity-60">
-          {loading ? "Membuat akun…" : "Daftar & Aktifkan"}
+          {loading ? "Membuat akun…" : "Daftar & Bayar"}
         </button>
       </form>
 

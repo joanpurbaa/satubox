@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { getAuthAdmin, getDb, isFirebaseConfigured } from "@/lib/firebase";
-import { getPlan, expiryFromNow } from "@/lib/plans";
+import { getPlan, PLAN_UNIT } from "@/lib/plans";
+import {
+  createPaymentRecord,
+  openXoftwarePayment,
+  toPublicPayment,
+  type PaymentRecord,
+} from "@/lib/payments";
 
 interface RegisterBody {
   username?: string;
@@ -75,22 +81,67 @@ export async function POST(req: Request) {
     }
 
     const now = Date.now();
-    const expiresAtMs = expiryFromNow(plan, now);
 
+    // Account dibuat PENDING_PAYMENT. Bukan subscriber aktif sampai webhook payment SUCCESS.
     await db.collection("users").doc(uid).set({
       username,
       email: userEmail,
       planId: plan.id,
       planLabel: plan.label,
       planAmount: plan.amount,
+      subscriptionStatus: "PENDING_PAYMENT",
       createdAt: now,
-      planStartedAt: now,
-      expiresAtMs,
+      expiresAtMs: 0,
+      updatedAt: now,
     });
 
     await db.collection("usernames").doc(usernameKey).set({ uid, createdAt: now });
 
-    return NextResponse.json({ ok: true, username, email: userEmail, planId: plan.id });
+    // Buat payment record + buka transaction di Xoftware (SATU source of truth untuk transaksi pertama).
+    const { refId } = await createPaymentRecord({
+      uid,
+      username,
+      email: userEmail,
+      planId: plan.id,
+      planLabel: plan.label,
+      amount: plan.amount,
+      durationMonths: plan.duration,
+      durationUnit: PLAN_UNIT,
+    });
+
+    let transactionReady = false;
+    try {
+      await openXoftwarePayment(
+        refId,
+        {
+          uid,
+          username,
+          email: userEmail,
+          planId: plan.id,
+          planLabel: plan.label,
+          amount: plan.amount,
+          durationMonths: plan.duration,
+          durationUnit: PLAN_UNIT,
+        },
+        { id: uid, name: username, email: userEmail },
+      );
+      transactionReady = true;
+    } catch (err) {
+      // User tetap ada (PENDING_PAYMENT) dan dapat retry lewat payment page.
+      console.error("[api/auth/register] Xoftware createTransaction gagal:", (err as Error)?.message ?? err);
+    }
+
+    const updatedDoc = await db.collection("payments").doc(refId).get();
+    const payment = updatedDoc.data() as PaymentRecord | undefined;
+
+    return NextResponse.json({
+      ok: true,
+      username,
+      email: userEmail,
+      planId: plan.id,
+      transactionReady,
+      payment: payment ? toPublicPayment({ ...payment, status: "PENDING" }) : null,
+    });
   } catch (err) {
     console.error("[api/auth/register] error:", (err as Error)?.message ?? err);
     return NextResponse.json({ error: "Terjadi kesalahan server" }, { status: 500 });

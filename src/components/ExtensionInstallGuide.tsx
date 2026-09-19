@@ -1,7 +1,7 @@
 const steps = [
   {
     title: "Download file extension",
-    desc: "Klik tombol di bawah untuk mengunduh file extension dalam format .zip.",
+    desc: "Klik tombol di atas untuk mengunduh file extension dalam format .zip.",
   },
   {
     title: "Ekstrak / unzip file",

@@ -1,8 +1,8 @@
 export type PlanUnit = "month" | "minute";
 
-// Ganti menjadi "month" saat masuk produksi (1/3/6 bulan).
-// Lokal/testing pakai "minute" (3/5/10 menit) untuk menguji fitur expired.
-export const PLAN_UNIT: PlanUnit = "minute";
+// Produksi: paket 1/3/6 bulan.
+// Mode "minute" (3/5/7 menit) hanya untuk sesi testing cepat / fitur expired.
+export const PLAN_UNIT: PlanUnit = "month" as PlanUnit;
 
 export interface Plan {
   id: string;
@@ -35,9 +35,9 @@ const minutePlans: Plan[] = [
     effective: "Rp99.000 · mode tes",
   },
   {
-    id: "10m",
-    duration: 10,
-    label: "10 Menit",
+    id: "7m",
+    duration: 7,
+    label: "7 Menit",
     amount: 179000,
     framing: "Coba paling lama",
     effective: "Rp179.000 · mode tes",
@@ -90,6 +90,18 @@ export function expiryFromNow(plan: Plan, fromMs = Date.now()): number {
     return fromMs + plan.duration * 60 * 1000;
   }
   const d = new Date(fromMs);
+  d.setMonth(d.getMonth() + plan.duration);
+  return d.getTime();
+}
+
+// Untuk renewal / aktivasi setelah payment: jangan sampai sisa subscription hilang.
+// Lewati base = max(now, expiry saat ini), lalu tambahkan durasi paket.
+export function stackExpiry(currentExpiresAtMs: number, plan: Plan, fromMs = Date.now()): number {
+  const base = Math.max(fromMs, currentExpiresAtMs || 0);
+  if (PLAN_UNIT === "minute") {
+    return base + plan.duration * 60 * 1000;
+  }
+  const d = new Date(base);
   d.setMonth(d.getMonth() + plan.duration);
   return d.getTime();
 }
