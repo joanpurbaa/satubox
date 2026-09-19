@@ -54,8 +54,12 @@ export default function PaymentClient({
   }, [payment.refId]);
 
   useEffect(() => {
+    const id0 = setTimeout(() => void refresh(), 0);
     const id = setInterval(refresh, POLL_MS);
-    return () => clearInterval(id);
+    return () => {
+      clearTimeout(id0);
+      clearInterval(id);
+    };
   }, [refresh]);
 
   useEffect(() => {

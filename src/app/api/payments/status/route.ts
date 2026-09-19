@@ -10,7 +10,10 @@ import {
 } from "@/lib/payments";
 import { getTransactionStatus, xoftwareConfigured } from "@/lib/xoftware";
 
-const RECONCILE_INTERVAL_MS = 5 * 60 * 1000;
+// Webhook Xoftware bisa telat/gagal; supaya status berubah secepat mungkin ("langsung"),
+// reconcile ke gateway dilakukan pada hampir setiap poll (halaman poll tiap ~4 detik)
+// dengan throttle kecil agar tidak menghantam gateway.
+const RECONCILE_INTERVAL_MS = 15 * 1000;
 
 // GET /api/payments/status?ref=...
 // Source of truth payment ada di backend. Frontend cukup polling endpoint ini;
