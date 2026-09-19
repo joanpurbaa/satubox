@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAuthAdmin } from "@/lib/firebase";
-import { getDb } from "@/lib/firebase";
+import { getAuthAdmin, getDb, isFirebaseConfigured } from "@/lib/firebase";
 import { getPlan, expiryFromNow } from "@/lib/plans";
 
 interface RegisterBody {
@@ -40,6 +39,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Pilihan durasi tidak ditemukan" }, { status: 400 });
     }
 
+    if (!isFirebaseConfigured()) {
+      console.error(
+        "[api/auth/register] Firebase Admin belum dikonfigurasi: FIREBASE_PROJECT_ID / FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY",
+      );
+      return NextResponse.json(
+        { error: "Server belum dikonfigurasi lengkap. Hubungi admin." },
+        { status: 500 },
+      );
+    }
+
     const db = getDb();
     const usernameKey = username.toLowerCase();
     const usernameDoc = await db.collection("usernames").doc(usernameKey).get();
@@ -58,6 +67,7 @@ export async function POST(req: Request) {
       if (code === "auth/email-already-exists") {
         return NextResponse.json({ error: "Email sudah terdaftar" }, { status: 409 });
       }
+      console.error("[api/auth/register] createUser gagal:", (err as Error)?.message ?? err);
       return NextResponse.json(
         { error: "Gagal membuat akun. Coba lagi." },
         { status: 500 },
@@ -81,7 +91,8 @@ export async function POST(req: Request) {
     await db.collection("usernames").doc(usernameKey).set({ uid, createdAt: now });
 
     return NextResponse.json({ ok: true, username, email: userEmail, planId: plan.id });
-  } catch {
+  } catch (err) {
+    console.error("[api/auth/register] error:", (err as Error)?.message ?? err);
     return NextResponse.json({ error: "Terjadi kesalahan server" }, { status: 500 });
   }
 }
