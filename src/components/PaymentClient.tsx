@@ -72,7 +72,7 @@ export default function PaymentClient({
       const dest =
         payment.purpose === "register"
           ? "/login?paid=1"
-          : "/dashboard?welcome=1";
+          : "/dashboard";
       const t = setTimeout(() => router.replace(dest), 900);
       return () => clearTimeout(t);
     }

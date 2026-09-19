@@ -23,28 +23,8 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-const ONBOARDING_STEPS = [
-  {
-    title: "Install SatuBox Extension",
-    desc: "Unduh file extension (.zip) lalu unzip, dan muat via chrome://extensions (Developer mode).",
-  },
-  {
-    title: "Buka extension di browser",
-    desc: "Klik ikon puzzle di toolbar Chrome, lalu pilih SatuBox Akses.",
-  },
-  {
-    title: "Login menggunakan akun SatuBox",
-    desc: "Masuk pakai akun ini di popup extension untuk mengakses semua platform.",
-  },
-];
-
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ welcome?: string }>;
-}) {
+export default async function DashboardPage() {
   const user = await requireSession();
-  const params = await searchParams;
 
   if (isAdminEmail(user.email)) {
     redirect("/admin");
@@ -66,7 +46,6 @@ export default async function DashboardPage({
   const isPending = subscriptionStatus === "PENDING_PAYMENT";
   const isExpired = !isPending && expiresAtMs <= now;
   const isActive = !isPending && !isExpired;
-  const welcome = params.welcome === "1";
 
   const pendingPayment = isPending
     ? await getLatestPendingPaymentForUser(user.uid)
@@ -83,62 +62,6 @@ export default async function DashboardPage({
         </div>
         <LogoutButton />
       </div>
-
-      {welcome && isActive && (
-        <div className="mt-8 overflow-hidden rounded-3xl border border-brand-500/50 bg-brand-500/10 shadow-xl shadow-black/30 backdrop-blur-md">
-          <div className="px-8 py-6">
-            <p className="text-2xl">Pembayaran berhasil 🎉</p>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <div>
-                <p className="text-sm text-text-secondary">Paket</p>
-                <p className="mt-1 font-semibold text-text-primary">{profile.planLabel}</p>
-              </div>
-              <div>
-                <p className="text-sm text-text-secondary">Status</p>
-                <p className="mt-1 font-semibold text-brand-300">Aktif</p>
-              </div>
-              <div className="sm:col-span-2">
-                <p className="text-sm text-text-secondary">Berlaku sampai</p>
-                <p className="mt-1 font-semibold text-text-primary">{formatExpiryDate(expiresAtMs)}</p>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-brand-500/30 px-8 py-6">
-            <p className="font-semibold text-text-primary">Mulai gunakan SatuBox</p>
-            <ol className="mt-4 space-y-3">
-              {ONBOARDING_STEPS.map((step, i) => (
-                <li key={step.title} className="flex gap-3">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-500/20 text-sm font-bold text-brand-200">
-                    {i + 1}
-                  </span>
-                  <div>
-                    <p className="font-medium text-text-primary">{step.title}</p>
-                    <p className="text-sm text-text-secondary">{step.desc}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <div className="mt-6 rounded-2xl border border-border bg-surface-dim px-5 py-4">
-              <p className="text-sm text-text-secondary">Username: <span className="font-semibold text-text-primary">{profile.username}</span></p>
-              <p className="mt-1 text-sm text-text-secondary">
-                Untuk password, gunakan password yang kamu buat saat mendaftar.
-              </p>
-            </div>
-            <div className="mt-5 flex flex-wrap gap-3">
-              <a
-                href="/satubox-ext.zip"
-                download="satubox-ext.zip"
-                className="sheen inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-brand-500 px-6 text-sm font-semibold text-white shadow-lg shadow-brand-500/20 transition-all hover:bg-brand-400 active:scale-[0.97]"
-              >
-                Download Extension (.zip)
-              </a>
-              <span className="inline-flex items-center text-xs text-text-muted">
-                Panduan lengkap di bawah.
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="mt-8 overflow-hidden rounded-3xl border border-border bg-surface/80 shadow-xl shadow-black/30 backdrop-blur-md">
         <div className="border-b border-border px-8 py-6">

@@ -1,11 +1,11 @@
 const steps = [
   {
     title: "Download file extension",
-    desc: "Klik tombol di atas untuk mengunduh file extension dalam format .zip.",
+    desc: "Klik tombol di atas untuk mengunduh paket extension. Isinya satu folder bernama satubox.",
   },
   {
     title: "Ekstrak / unzip file",
-    desc: "Unzip file tersebut. Folder hasil ekstrak berisi manifest.json. Simpan di lokasi yang mudah ditemukan.",
+    desc: "Unzip file-nya. Akan muncul folder bernama satubox yang berisi manifest.json. Simpan folder ini di lokasi yang mudah ditemukan.",
   },
   {
     title: "Buka halaman extension",
@@ -13,11 +13,11 @@ const steps = [
   },
   {
     title: "Aktifkan Developer Mode",
-    desc: "Aktifkan toggle &quot;Developer mode&quot; di pojok kanan atas halaman.",
+    desc: "Aktifkan toggle Developer mode di pojok kanan atas halaman.",
   },
   {
     title: "Load unpacked",
-    desc: "Klik tombol &quot;Load unpacked&quot;, lalu pilih folder hasil unzip tadi. Extension SatuBox Akses muncul di daftar.",
+    desc: "Klik tombol &quot;Load unpacked&quot;, lalu pilih folder satubox hasil ekstrak tadi. Extension SatuBox Akses muncul di daftar.",
   },
   {
     title: "Akses via ikon puzzle",
@@ -32,7 +32,22 @@ const steps = [
 export default function ExtensionInstallGuide() {
   return (
     <div className="mt-6 rounded-3xl border border-border bg-surface/80 px-8 py-8 shadow-xl shadow-black/30 backdrop-blur-md">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="max-h-max">
+      <div className="aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black">
+        <iframe
+          width="560"
+          height="315"
+          src="https://www.youtube.com/embed/Q8Xr7_MLzYU?si=u6kTUr16dYLN-Gsf"
+          title="Tutorial Instalasi SatuBox Extension"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
+          className="h-full w-full"
+        />
+      </div>
+    </div>
+
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h3 className="text-lg font-bold text-text-primary">Instalasi Extension</h3>
           <p className="mt-1 text-sm text-text-secondary">
@@ -52,7 +67,7 @@ export default function ExtensionInstallGuide() {
               strokeLinejoin="round"
             />
           </svg>
-          Download Extension (.zip)
+          Download Extension (folder satubox)
         </a>
       </div>
 

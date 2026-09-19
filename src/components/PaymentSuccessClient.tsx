@@ -46,7 +46,7 @@ export default function PaymentSuccessClient({
   useEffect(() => {
     if (status === "SUCCESS") {
       const dest =
-        purpose === "register" ? "/login?paid=1" : "/dashboard?welcome=1";
+        purpose === "register" ? "/login?paid=1" : "/dashboard";
       const t = setTimeout(() => router.replace(dest), 1200);
       return () => clearTimeout(t);
     }

@@ -19,10 +19,10 @@ export default async function LoginPage({
   // langsung lanjut ke dashboard + panduan instalasi.
   if (params.paid === "1") {
     const user = await getSessionUser();
-    if (user) redirect("/dashboard?welcome=1");
+    if (user) redirect("/dashboard");
     return (
       <main className="flex min-h-screen items-center justify-center px-5 py-16">
-        <LoginForm paid next="/dashboard?welcome=1" />
+        <LoginForm paid next="/dashboard" />
       </main>
     );
   }
