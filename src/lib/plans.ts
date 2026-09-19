@@ -2,7 +2,7 @@ export type PlanUnit = "month" | "minute";
 
 // Produksi: paket 1/3/6 bulan.
 // Mode "minute" (3/5/7 menit) hanya untuk sesi testing cepat / fitur expired.
-export const PLAN_UNIT: PlanUnit = "month" as PlanUnit;
+export const PLAN_UNIT: PlanUnit = "minute" as PlanUnit;
 
 export interface Plan {
   id: string;

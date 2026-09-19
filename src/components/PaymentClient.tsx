@@ -65,7 +65,7 @@ export default function PaymentClient({
 
   useEffect(() => {
     if (payment.status === "SUCCESS") {
-      const t = setTimeout(() => router.push("/dashboard?welcome=1"), 1200);
+      const t = setTimeout(() => router.replace("/dashboard?welcome=1"), 900);
       return () => clearTimeout(t);
     }
   }, [payment.status, router]);
@@ -175,9 +175,6 @@ export default function PaymentClient({
               {copied ? "Tersalin ✓" : "Salin QRIS"}
             </button>
           </div>
-          <p className="mt-3 break-all rounded-lg bg-white/90 px-3 py-2 font-mono text-[11px] text-text-primary">
-            {payment.qrisText}
-          </p>
         </div>
       )}
 

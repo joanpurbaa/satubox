@@ -13,6 +13,7 @@ import { getLatestPendingPaymentForUser } from "@/lib/payments";
 import SubscriptionCountdown from "@/components/SubscriptionCountdown";
 import LogoutButton from "@/components/LogoutButton";
 import RenewPlans from "@/components/RenewPlans";
+import ContinuePaymentButton from "@/components/ContinuePaymentButton";
 import ExtensionInstallGuide from "@/components/ExtensionInstallGuide";
 
 export const metadata: Metadata = {
@@ -218,9 +219,12 @@ export default async function DashboardPage({
             Langganan kedaluwarsa
           </h3>
           <p className="mt-1 text-sm text-text-secondary">
-            Pilih paket untuk memperpanjang langganan. Pembayaran dilakukan lewat QRIS.
+            Langganan sudah kedaluwarsa. Lanjutkan pembayaran atau pilih paket lain untuk aktif lagi.
           </p>
           <div className="mt-4">
+            <ContinuePaymentButton planId={profile.planId} />
+          </div>
+          <div className="mt-6 rounded-2xl border border-border bg-surface-dim px-5 py-4">
             <RenewPlans />
           </div>
           <p className="mt-4 text-xs text-text-muted">
