@@ -13,12 +13,14 @@ export default function PaymentSuccessClient({
   planLabel,
   amount,
   username,
+  purpose,
 }: {
   refId: string;
   initialStatus: string;
   planLabel: string;
   amount: number;
   username: string;
+  purpose: "register" | "renew";
 }) {
   const router = useRouter();
   const [status, setStatus] = useState(initialStatus);
@@ -43,10 +45,12 @@ export default function PaymentSuccessClient({
 
   useEffect(() => {
     if (status === "SUCCESS") {
-      const t = setTimeout(() => router.push("/dashboard?welcome=1"), 1200);
+      const dest =
+        purpose === "register" ? "/login?paid=1" : "/dashboard?welcome=1";
+      const t = setTimeout(() => router.replace(dest), 1200);
       return () => clearTimeout(t);
     }
-  }, [status, router]);
+  }, [status, purpose, router]);
 
   if (status === "SUCCESS") {
     return (

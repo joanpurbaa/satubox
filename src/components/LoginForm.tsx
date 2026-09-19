@@ -6,9 +6,11 @@ import Link from "next/link";
 
 export default function LoginForm({
   registered,
+  paid,
   next,
 }: {
   registered?: boolean;
+  paid?: boolean;
   next?: string;
 }) {
   const router = useRouter();
@@ -51,6 +53,12 @@ export default function LoginForm({
       {registered && (
         <div className="mt-4 rounded-xl border border-brand-500/40 bg-brand-500/10 px-4 py-3 text-sm text-brand-200">
           Akun berhasil dibuat. Silakan masuk.
+        </div>
+      )}
+
+      {paid && (
+        <div className="mt-4 rounded-xl border border-brand-500/40 bg-brand-500/10 px-4 py-3 text-sm text-brand-200">
+          Pembayaran berhasil 🎉 Silakan masuk untuk lanjut ke dashboard.
         </div>
       )}
 

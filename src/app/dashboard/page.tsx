@@ -222,7 +222,7 @@ export default async function DashboardPage({
             Langganan sudah kedaluwarsa. Lanjutkan pembayaran atau pilih paket lain untuk aktif lagi.
           </p>
           <div className="mt-4">
-            <ContinuePaymentButton planId={profile.planId} />
+            <ContinuePaymentButton planId={profile.planId} label="Perpanjang Layanan" />
           </div>
           <div className="mt-6 rounded-2xl border border-border bg-surface-dim px-5 py-4">
             <RenewPlans />

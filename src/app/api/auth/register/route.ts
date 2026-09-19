@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { getAuthAdmin, getDb, isFirebaseConfigured } from "@/lib/firebase";
 import { getPlan, PLAN_UNIT } from "@/lib/plans";
 import {
@@ -7,6 +8,7 @@ import {
   toPublicPayment,
   type PaymentRecord,
 } from "@/lib/payments";
+import { SESSION_COOKIE, SESSION_MAX_AGE_MS, sessionCookieOptions } from "@/lib/session";
 
 interface RegisterBody {
   username?: string;
@@ -107,6 +109,7 @@ export async function POST(req: Request) {
       amount: plan.amount,
       durationMonths: plan.duration,
       durationUnit: PLAN_UNIT,
+      purpose: "register",
     });
 
     let transactionReady = false;
@@ -122,6 +125,7 @@ export async function POST(req: Request) {
           amount: plan.amount,
           durationMonths: plan.duration,
           durationUnit: PLAN_UNIT,
+          purpose: "register",
         },
         { id: uid, name: username, email: userEmail },
       );
@@ -129,6 +133,31 @@ export async function POST(req: Request) {
     } catch (err) {
       // User tetap ada (PENDING_PAYMENT) dan dapat retry lewat payment page.
       console.error("[api/auth/register] Xoftware createTransaction gagal:", (err as Error)?.message ?? err);
+    }
+
+    // Auto-login agar setelah daftar langsung masuk halaman pembayaran QR tanpa login manual.
+    try {
+      const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+      if (apiKey) {
+        const loginRes = await fetch(
+          `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password, returnSecureToken: true }),
+          },
+        );
+        const loginData = (await loginRes.json()) as { idToken?: string };
+        if (loginRes.ok && loginData.idToken) {
+          const sessionCookie = await getAuthAdmin().createSessionCookie(loginData.idToken, {
+            expiresIn: SESSION_MAX_AGE_MS,
+          });
+          const jar = await cookies();
+          jar.set(SESSION_COOKIE, sessionCookie, sessionCookieOptions());
+        }
+      }
+    } catch (err) {
+      console.error("[api/auth/register] auto-login gagal:", (err as Error)?.message ?? err);
     }
 
     const updatedDoc = await db.collection("payments").doc(refId).get();

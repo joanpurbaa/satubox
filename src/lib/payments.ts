@@ -11,6 +11,7 @@ export const PAYMENT_EXPIRY_MINUTES = 30;
 
 export type PaymentStatus = "PENDING" | "SUCCESS" | "FAILED" | "EXPIRED";
 export type SubscriptionStatus = "PENDING_PAYMENT" | "ACTIVE";
+export type PaymentPurpose = "register" | "renew";
 
 export interface PaymentRecord {
   refId: string;
@@ -22,6 +23,7 @@ export interface PaymentRecord {
   amount: number;
   durationMonths: number;
   durationUnit: "month" | "minute";
+  purpose: PaymentPurpose;
   provider: "xoffice";
   transactionId?: string;
   channelCode?: string;
@@ -49,6 +51,7 @@ export type PaymentPublic = Pick<
   | "amount"
   | "durationMonths"
   | "status"
+  | "purpose"
   | "qrisText"
   | "paymentUrl"
   | "expiresAtMs"
@@ -66,6 +69,7 @@ export function toPublicPayment(p: PaymentRecord): PaymentPublic {
     amount: p.amount,
     durationMonths: p.durationMonths,
     status: p.status,
+    purpose: p.purpose,
     qrisText: p.qrisText,
     paymentUrl: p.paymentUrl,
     expiresAtMs: p.expiresAtMs,
@@ -91,6 +95,7 @@ export interface NewPaymentInput {
   amount: number;
   durationMonths: number;
   durationUnit: "month" | "minute";
+  purpose: PaymentPurpose;
 }
 
 export async function createPaymentRecord(input: NewPaymentInput): Promise<{
@@ -109,6 +114,7 @@ export async function createPaymentRecord(input: NewPaymentInput): Promise<{
     amount: input.amount,
     durationMonths: input.durationMonths,
     durationUnit: input.durationUnit,
+    purpose: input.purpose,
     provider: "xoffice",
     status: "PENDING",
     expiresAtMs: now + PAYMENT_EXPIRY_MINUTES * 60 * 1000,

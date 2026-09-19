@@ -79,6 +79,7 @@ export async function POST(req: Request) {
     amount: plan.amount,
     durationMonths: plan.duration,
     durationUnit: PLAN_UNIT,
+    purpose: "renew",
   });
 
   let transactionReady = true;
@@ -94,6 +95,7 @@ export async function POST(req: Request) {
         amount: plan.amount,
         durationMonths: plan.duration,
         durationUnit: PLAN_UNIT,
+        purpose: "renew",
       },
       { id: user.uid, name: username, email },
     );

@@ -4,7 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PLANS } from "@/lib/plans";
 
-export default function ContinuePaymentButton({ planId }: { planId?: string }) {
+export default function ContinuePaymentButton({
+  planId,
+  label = "Lanjutkan Pembayaran",
+}: {
+  planId?: string;
+  label?: string;
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -41,7 +47,7 @@ export default function ContinuePaymentButton({ planId }: { planId?: string }) {
         onClick={go}
         className="inline-flex h-11 items-center justify-center rounded-xl bg-brand-500 px-6 text-sm font-semibold text-white transition-all hover:bg-brand-400 active:scale-[0.98] disabled:opacity-60"
       >
-        {busy ? "Membuat pembayaran…" : "Lanjutkan Pembayaran"}
+        {busy ? "Membuat pembayaran…" : label}
       </button>
       {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
     </div>

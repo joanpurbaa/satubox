@@ -65,10 +65,14 @@ export default function PaymentClient({
 
   useEffect(() => {
     if (payment.status === "SUCCESS") {
-      const t = setTimeout(() => router.replace("/dashboard?welcome=1"), 900);
+      const dest =
+        payment.purpose === "register"
+          ? "/login?paid=1"
+          : "/dashboard?welcome=1";
+      const t = setTimeout(() => router.replace(dest), 900);
       return () => clearTimeout(t);
     }
-  }, [payment.status, router]);
+  }, [payment.status, payment.purpose, router]);
 
   const createPayment = useCallback(
     async () => {

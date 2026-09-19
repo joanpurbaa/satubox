@@ -52,6 +52,7 @@ export default async function PaymentSuccessPage({
         planLabel={current.planLabel}
         amount={current.amount}
         username={String(profile.username ?? "")}
+        purpose={current.purpose}
       />
     </main>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import LogoutButton from "@/components/LogoutButton";
 import AdminAppsModule from "@/components/AdminAppsModule";
 
@@ -122,6 +123,32 @@ export default function AdminDashboard({
   const [tab, setTab] = useState<Tab>("ringkasan");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | UserStatus>("all");
+  const router = useRouter();
+  const [deletingUid, setDeletingUid] = useState<string | null>(null);
+  const [adminMsg, setAdminMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+
+  async function deleteUser(u: AdminUserRow) {
+    if (deletingUid) return;
+    const yes = window.confirm(
+      `Hapus user "${u.username}" (${u.email})?\n\nSeluruh data ikut terhapus permanen: login, lembar site, dan riwayat pembayaran. Tidak bisa dikembalikan. Lanjut?`,
+    );
+    if (!yes) return;
+    setDeletingUid(u.uid);
+    setAdminMsg(null);
+    try {
+      const res = await fetch(`/api/admin/users/${encodeURIComponent(u.uid)}`, {
+        method: "DELETE",
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Gagal menghapus user");
+      setAdminMsg({ kind: "ok", text: `User "${u.username}" berhasil dihapus.` });
+      router.refresh();
+    } catch (e) {
+      setAdminMsg({ kind: "err", text: (e as Error).message || "Terjadi kesalahan" });
+    } finally {
+      setDeletingUid(null);
+    }
+  }
 
   const filteredUsers = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -283,6 +310,18 @@ export default function AdminDashboard({
                   </div>
                 </div>
 
+                {adminMsg && (
+                  <p
+                    className={
+                      "mt-4 rounded-xl border px-4 py-3 text-sm " +
+                      (adminMsg.kind === "ok"
+                        ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                        : "border-red-500/30 bg-red-500/10 text-red-300")
+                    }>
+                    {adminMsg.text}
+                  </p>
+                )}
+
                 <div className="mt-6 overflow-hidden rounded-3xl border border-border bg-surface/80 backdrop-blur-md">
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[880px] text-left text-sm">
@@ -295,6 +334,7 @@ export default function AdminDashboard({
                           <th className="px-5 py-3.5 font-semibold">Sisa</th>
                           <th className="px-5 py-3.5 text-center font-semibold">Site</th>
                           <th className="px-5 py-3.5 font-semibold">Status</th>
+                          <th className="px-5 py-3.5 text-center font-semibold">Aksi</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -337,13 +377,22 @@ export default function AdminDashboard({
                                   {s.label}
                                 </span>
                               </td>
+                              <td className="px-5 py-3.5 text-center">
+                                <button
+                                  type="button"
+                                  disabled={deletingUid !== null}
+                                  onClick={() => deleteUser(u)}
+                                  className="rounded-lg border border-red-500/40 px-3 py-1.5 text-xs font-semibold text-red-300 transition-colors hover:bg-red-500/10 disabled:opacity-50">
+                                  {deletingUid === u.uid ? "Menghapus…" : "Hapus"}
+                                </button>
+                              </td>
                             </tr>
                           );
                         })}
                         {filteredUsers.length === 0 && (
                           <tr>
                             <td
-                              colSpan={7}
+                              colSpan={8}
                               className="px-5 py-10 text-center text-text-secondary">
                               Tidak ada user yang cocok.
                             </td>
