@@ -1,41 +1,6 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
-
-interface Plan {
-  months: 1 | 3 | 6;
-  price: string;
-  duration: string;
-  framing: string;
-  highlighted?: boolean;
-  badge?: string;
-  effective: string;
-}
-
-const plans: Plan[] = [
-  {
-    months: 1,
-    price: "Rp39.000",
-    duration: "1 Bulan",
-    framing: "Buat yang mau cobain dulu",
-    effective: "Rp39.000/bulan",
-  },
-  {
-    months: 3,
-    price: "Rp99.000",
-    duration: "3 Bulan",
-    framing: "Paling banyak dipilih mahasiswa",
-    highlighted: true,
-    badge: "Paling Dipilih",
-    effective: "Rp33.000/bulan",
-  },
-  {
-    months: 6,
-    price: "Rp179.000",
-    duration: "6 Bulan",
-    framing: "Makin lama, makin hemat",
-    effective: "Rp29.000/bulan",
-  },
-];
+import { PLANS, formatRupiah } from "@/lib/plans";
 
 export default function Pricing() {
   return (
@@ -59,14 +24,14 @@ export default function Pricing() {
           </h2>
           <p className="mt-4 text-lg text-text-secondary">
             Semua paket dapat akses ke 30 aplikasi premium lengkap. Yang beda cuma
-            durasinya, jadi makin lama makin hemat.
+            durasinya.
           </p>
         </div>
 
         <div className="reveal-stagger mt-16 grid items-stretch gap-6 lg:grid-cols-3 lg:gap-8">
-          {plans.map((plan) => (
+          {PLANS.map((plan) => (
             <div
-              key={plan.months}
+              key={plan.id}
               className={`relative flex flex-col rounded-3xl border p-8 text-center lg:p-9 ${
                 plan.highlighted
                   ? "z-10 order-first border-brand-500 bg-brand-500 text-white shadow-xl shadow-brand-500/30 lg:order-none lg:-translate-y-8 lg:scale-[1.03]"
@@ -84,7 +49,7 @@ export default function Pricing() {
                   plan.highlighted ? "text-brand-100" : "text-text-secondary"
                 }`}
               >
-                {plan.duration}
+                {plan.label}
               </p>
               <p
                 className={`mt-3 text-lg ${
@@ -95,14 +60,14 @@ export default function Pricing() {
               </p>
 
               <p className="mt-2 text-5xl font-extrabold tracking-tight">
-                {plan.price}
+                {formatRupiah(plan.amount)}
               </p>
               <p
                 className={`mt-2 text-sm ${
                   plan.highlighted ? "text-brand-100" : "text-text-muted"
                 }`}
               >
-                per {plan.duration}
+                per {plan.label}
               </p>
 
               <ul
@@ -147,7 +112,7 @@ export default function Pricing() {
 
               <div className="mt-8">
                 <Link
-                  href={`/checkout/${plan.months}`}
+                  href={`/daftar?plan=${plan.id}`}
                   className={`inline-flex h-12 w-full items-center justify-center rounded-xl text-sm font-semibold transition-all active:scale-[0.97] ${
                     plan.highlighted
                       ? "bg-white text-brand-700 hover:bg-brand-50"

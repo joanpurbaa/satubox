@@ -9,9 +9,9 @@ const faqs = [
       "Aman, karena kamu tetap memakai akun dan data pribadimu sendiri. SatuBox hanya menyediakan akses aplikasi premium melalui proses yang sudah terverifikasi. Ada kendala apa pun, tim support siap bantu.",
   },
   {
-    question: "Bagaimana cara aktivasi setelah bayar?",
+    question: "Bagaimana cara aktivasi setelah daftar?",
     answer:
-      "Setelah pembayaran berhasil, instruksi aktivasi lengkap langsung dikirim ke kamu. Secara umum, kamu tinggal mendaftarkan akunmu ke aplikasi yang tersedia dan aplikasinya langsung bisa dipakai. Prosesnya cepat, nggak perlu nunggu berhari-hari.",
+      "Setelah akunmu aktif, langkah aktivasi langsung bisa diikuti di dashboard akun kamu. Secara umum, kamu tinggal mendaftarkan akunmu ke aplikasi yang tersedia dan aplikasinya langsung bisa dipakai. Prosesnya cepat, nggak perlu nunggu berhari-hari.",
   },
   {
     question: "Apakah bisa upgrade atau ganti paket?",
