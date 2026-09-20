@@ -5,7 +5,7 @@ const steps = [
   },
   {
     title: "Ekstrak / unzip file",
-    desc: "Unzip file-nya. Akan muncul folder bernama satubox yang berisi manifest.json. Simpan folder ini di lokasi yang mudah ditemukan.",
+    desc: "Unzip file-nya. Simpan folder ini di lokasi yang mudah ditemukan.",
   },
   {
     title: "Buka halaman extension",
@@ -17,7 +17,7 @@ const steps = [
   },
   {
     title: "Load unpacked",
-    desc: "Klik tombol &quot;Load unpacked&quot;, lalu pilih folder satubox hasil ekstrak tadi. Extension SatuBox Akses muncul di daftar.",
+    desc: "Klik tombol Load unpacked, lalu pilih folder satubox hasil ekstrak tadi. Extension SatuBox Akses muncul di daftar.",
   },
   {
     title: "Akses via ikon puzzle",
