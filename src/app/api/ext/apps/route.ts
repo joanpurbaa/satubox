@@ -8,13 +8,12 @@ export async function GET() {
     .flatMap((a) =>
       a.domains.map((domain) => ({
         domain,
+        id: a.id,
         name: a.name,
         icon: a.icon,
         cat: a.cat,
         ...(a.enabled ? { enabled: true } : { enabled: false }),
-        ...(a.enabled && a.gateEnabled
-          ? { gate: true, gateEmail: a.gateEmail, gatePassword: a.gatePassword }
-          : {}),
+        ...(a.enabled && a.gateEnabled ? { gate: true } : {}),
       }))
     );
   return corsJson({ ok: true, apps: flat });
