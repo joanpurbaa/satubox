@@ -30,6 +30,9 @@ export interface AdminAppRow {
   cat: string;
   domains: string[];
   enabled: boolean;
+  gateEnabled: boolean;
+  gateEmail: string;
+  gatePassword: string;
   adopted: number;
   inUse: string[];
 }

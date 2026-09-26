@@ -95,6 +95,9 @@ export default async function AdminPage() {
     cat: a.cat,
     domains: a.domains,
     enabled: a.enabled,
+    gateEnabled: a.gateEnabled,
+    gateEmail: a.gateEmail,
+    gatePassword: a.gatePassword,
     adopted: adoption[idx] ?? 0,
     inUse: a.domains.filter((d) => domainCount.has(d)),
   }));
@@ -107,6 +110,9 @@ export default async function AdminPage() {
     cat: "LAINNYA",
     domains: [domain],
     enabled: true,
+    gateEnabled: false,
+    gateEmail: "",
+    gatePassword: "",
     adopted: count,
     inUse: [domain],
   }));

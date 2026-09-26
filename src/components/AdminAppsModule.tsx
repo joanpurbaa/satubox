@@ -12,6 +12,9 @@ interface Draft {
   category: string;
   cat: string;
   domains: string;
+  gateEnabled: boolean;
+  gateEmail: string;
+  gatePassword: string;
 }
 
 const emptyDraft: Draft = {
@@ -20,6 +23,9 @@ const emptyDraft: Draft = {
   category: "Lainnya",
   cat: "LAINNYA",
   domains: "",
+  gateEnabled: false,
+  gateEmail: "",
+  gatePassword: "",
 };
 
 function draftFrom(app: AdminAppRow): Draft {
@@ -29,6 +35,9 @@ function draftFrom(app: AdminAppRow): Draft {
     category: app.category === "Lainnya" ? "Lainnya" : app.category,
     cat: app.cat,
     domains: app.domains.join(", "),
+    gateEnabled: app.gateEnabled,
+    gateEmail: app.gateEmail,
+    gatePassword: app.gatePassword,
   };
 }
 
@@ -86,6 +95,12 @@ export default function AdminAppsModule({
     setOkMsg("");
   }
 
+  function setFlag(value: boolean) {
+    setDraft((d) => ({ ...d, gateEnabled: value }));
+    setError("");
+    setOkMsg("");
+  }
+
   function startAdd(domain?: string) {
     setError("");
     setOkMsg("");
@@ -135,12 +150,21 @@ export default function AdminAppsModule({
         .filter(Boolean);
       if (!draft.name.trim()) throw new Error("Nama aplikasi wajib diisi");
       if (domains.length === 0) throw new Error("Minimal satu domain wajib diisi");
+      const gateEnabled = draft.gateEnabled;
+      const gateEmail = draft.gateEmail.trim();
+      const gatePassword = draft.gatePassword;
+      if (gateEnabled && (!gateEmail || !gatePassword)) {
+        throw new Error("Gate login aktif, tapi email/password kosong");
+      }
       await api("/api/admin/catalog/" + app.id, "PATCH", {
         name: draft.name.trim(),
         icon: draft.icon.trim(),
         category: draft.category.trim(),
         cat: draft.cat,
         domains,
+        gateEnabled,
+        gateEmail: gateEmail,
+        gatePassword,
       });
     }, "Perubahan tersimpan.");
   }
@@ -168,7 +192,7 @@ export default function AdminAppsModule({
       async () => {
         await api("/api/admin/catalog/" + app.id, "PATCH", { enabled });
       },
-      enabled ? "Aplikasi diaktifkan kembali." : "Aplikasi disembunyikan dari extension."
+      enabled ? "Aplikasi diaktifkan kembali." : "Aplikasi dinonaktifkan (maintenance)."
     );
   }
 
@@ -261,6 +285,65 @@ export default function AdminAppsModule({
             </div>
           </div>
 
+          <div className="mt-5 rounded-2xl border border-border bg-surface-dim/60 p-4">
+            <label className="flex cursor-pointer items-center justify-between gap-3">
+              <span>
+                <span className="block text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                  Gate login (email / password)
+                </span>
+                <span className="mt-1 block text-xs text-text-secondary">
+                  Jika aktif, klik ikon app di extension akan menampilkan email & password ini,
+                  lalu tombol lanjut ke halaman app.
+                </span>
+              </span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={draft.gateEnabled}
+                onClick={() => setFlag(!draft.gateEnabled)}
+                className={
+                  "relative h-6 w-11 shrink-0 rounded-full transition-colors " +
+                  (draft.gateEnabled ? "bg-brand-500" : "bg-surface-dim")
+                }>
+                <span
+                  className={
+                    "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all " +
+                    (draft.gateEnabled ? "left-[22px]" : "left-0.5")
+                  }
+                />
+              </button>
+            </label>
+            {draft.gateEnabled && (
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                    Email login
+                  </label>
+                  <input
+                    className={inputCls + " mt-1"}
+                    value={draft.gateEmail}
+                    onChange={(e) => set("gateEmail", e.target.value)}
+                    placeholder="email untuk login app"
+                    autoComplete="off"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                    Password login
+                  </label>
+                  <input
+                    type="text"
+                    className={inputCls + " mt-1"}
+                    value={draft.gatePassword}
+                    onChange={(e) => set("gatePassword", e.target.value)}
+                    placeholder="password untuk login app"
+                    autoComplete="off"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="mt-5 flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-surface-dim">
               {draft.icon ? (
@@ -338,7 +421,13 @@ export default function AdminAppsModule({
 
               {!enabled && (
                 <p className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-300">
-                  Disembunyikan dari extension
+                  Sedang maintenance
+                </p>
+              )}
+
+              {enabled && a.gateEnabled && (
+                <p className="mt-3 rounded-lg border border-brand-500/30 bg-brand-500/10 px-2.5 py-1 text-xs font-semibold text-brand-300">
+                  Gate login aktif (email/password)
                 </p>
               )}
 
@@ -411,7 +500,7 @@ export default function AdminAppsModule({
                   </div>
                 </div>
               ) : (
-                <div className="mt-4 flex flex-wrap gap-2 border-t border-border pt-4">
+                <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-border pt-4">
                   <button
                     type="button"
                     disabled={busy}
@@ -421,22 +510,35 @@ export default function AdminAppsModule({
                   </button>
                   <button
                     type="button"
+                    role="switch"
+                    aria-checked={enabled}
                     disabled={busy}
                     onClick={() =>
                       window.confirm(
                         enabled
-                          ? "Sembunyikan '" + a.name + "' dari semua extension?"
+                          ? "Nonaktifkan '" + a.name + "'? App akan tampil sebagai 'sedang maintenance' di extension."
                           : "Aktifkan kembali '" + a.name + "'?"
                       ) && setEnabled(a, !enabled)
                     }
                     className={
-                      btnCls +
-                      " " +
+                      "flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-50 " +
                       (enabled
-                        ? "border border-amber-500/40 text-amber-300 hover:bg-amber-500/10"
-                        : "border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/10")
+                        ? "border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/10"
+                        : "border border-amber-500/40 text-amber-300 hover:bg-amber-500/10")
                     }>
-                    {enabled ? "Sembunyikan" : "Aktifkan"}
+                    <span
+                      className={
+                        "relative h-5 w-9 rounded-full transition-colors " +
+                        (enabled ? "bg-emerald-500/70" : "bg-amber-500/40")
+                      }>
+                      <span
+                        className={
+                          "absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all " +
+                          (enabled ? "left-4" : "left-0.5")
+                        }
+                      />
+                    </span>
+                    {enabled ? "Aktif" : "Maintenance"}
                   </button>
                 </div>
               )}

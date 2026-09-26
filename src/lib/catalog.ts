@@ -11,6 +11,9 @@ export interface CatalogApp {
   cat: ExtCat;
   domains: string[];
   enabled: boolean;
+  gateEnabled: boolean;
+  gateEmail: string;
+  gatePassword: string;
   createdAt: number;
   updatedAt: number;
 }
@@ -56,6 +59,9 @@ function fromDoc(id: string, d: Record<string, unknown>): CatalogApp {
     cat: (VALID_CATS.includes(cat as ExtCat) ? cat : "LAINNYA") as ExtCat,
     domains: normalizeDomains(d.domains),
     enabled: d.enabled !== false,
+    gateEnabled: d.gateEnabled === true,
+    gateEmail: String(d.gateEmail || ""),
+    gatePassword: String(d.gatePassword || ""),
     createdAt: Number(d.createdAt) || 0,
     updatedAt: Number(d.updatedAt) || 0,
   };

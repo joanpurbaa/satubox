@@ -10,6 +10,9 @@ interface UpdateBody {
   cat?: string;
   domains?: string[];
   enabled?: boolean;
+  gateEnabled?: boolean;
+  gateEmail?: string;
+  gatePassword?: string;
 }
 
 export async function PATCH(
@@ -58,6 +61,20 @@ export async function PATCH(
     patch.domains = domains;
   }
   if (typeof body.enabled === "boolean") patch.enabled = body.enabled;
+
+  // "Gate Login": tampilkan email/password (isi admin) saat user klik app di ext.
+  if (typeof body.gateEnabled === "boolean") patch.gateEnabled = body.gateEnabled;
+  if (typeof body.gateEmail === "string") patch.gateEmail = body.gateEmail.trim();
+  if (typeof body.gatePassword === "string") patch.gatePassword = body.gatePassword;
+  if (
+    patch.gateEnabled === true &&
+    (!String(patch.gateEmail ?? "").trim() || !String(patch.gatePassword ?? "").trim())
+  ) {
+    return NextResponse.json(
+      { error: "Gate login membutuhkan email & password" },
+      { status: 400 },
+    );
+  }
 
   await ref.update(patch);
   return NextResponse.json({ ok: true });

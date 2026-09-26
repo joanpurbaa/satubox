@@ -11,7 +11,10 @@ export async function GET() {
         name: a.name,
         icon: a.icon,
         cat: a.cat,
-        ...(a.enabled ? {} : { deleted: true }),
+        ...(a.enabled ? { enabled: true } : { enabled: false }),
+        ...(a.enabled && a.gateEnabled
+          ? { gate: true, gateEmail: a.gateEmail, gatePassword: a.gatePassword }
+          : {}),
       }))
     );
   return corsJson({ ok: true, apps: flat });
